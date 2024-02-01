@@ -5,19 +5,29 @@ using UnityEngine;
 public class Plane : MonoBehaviour
 {
     public List<Vector2> points;
-    public float newPositionThreshold = 0.2f;
-    Vector2 lastPosition;
-    LineRenderer lineRenderer;
-    Vector2 currentPosition;
-    Rigidbody2D rb;
-    public float speed = 1;
-    public AnimationCurve landing;
-    public float landingTimer;
     public List<Sprite> sprites;
+
+    public int score = 0;
+
+    public float newPositionThreshold = 0.2f;
+    public float speed = 1;
+    public float landingTimer;
+
+    Vector2 lastPosition;
+    Vector2 currentPosition;
+
+    LineRenderer lineRenderer;
+    Rigidbody2D rb;
     SpriteRenderer sr;
+
+    public Rigidbody2D runwayRB;
+    
+    public AnimationCurve landing;
+    
     public Color red;
     public Color white;
 
+    bool isLanding = false;
 
     private void Start()
     {
@@ -37,7 +47,7 @@ public class Plane : MonoBehaviour
 
     }
 
-
+    
     private void OnTriggerExit2D(Collider2D collision)
     {
         sr.color = white;
@@ -49,7 +59,17 @@ public class Plane : MonoBehaviour
         if (dist < 1)
         {
             Destroy(gameObject);
-            Destroy(collision);
+            if (collision.gameObject.layer != 7)
+            {
+                Destroy(collision.gameObject);
+            }
+        }
+
+        if (collision.OverlapPoint(transform.position) && collision.gameObject.layer == 7 && isLanding != true)
+        {
+            
+            isLanding = true;
+            score += 1;
         }
     }
     
@@ -70,7 +90,7 @@ public class Plane : MonoBehaviour
     private void Update()
     {
         
-        if (Input.GetKey(KeyCode.Space))
+        if (isLanding)
         {
             landingTimer += 0.5f * Time.deltaTime;
             float interpolation = landing.Evaluate(landingTimer);
@@ -80,7 +100,7 @@ public class Plane : MonoBehaviour
             }
             else
             {
-                transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, interpolation);
+                transform.localScale = Vector3.Lerp(Vector3.one * 5, Vector3.zero, interpolation);
             }
         }
 
@@ -123,5 +143,10 @@ public class Plane : MonoBehaviour
             lineRenderer.SetPosition(lineRenderer.positionCount - 1, newPosition);
             lastPosition = newPosition;
         }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        
     }
 }
