@@ -15,6 +15,9 @@ public class Plane : MonoBehaviour
     public float landingTimer;
     public List<Sprite> sprites;
     SpriteRenderer sr;
+    public Color red;
+    public Color white;
+
 
     private void Start()
     {
@@ -33,6 +36,24 @@ public class Plane : MonoBehaviour
         transform.localScale = new Vector3(5, 5, 1);
 
     }
+
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        sr.color = white;
+    }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        sr.color = red;
+        float dist = Vector3.Distance(collision.transform.position, transform.position);
+        if (dist < 1)
+        {
+            Destroy(gameObject);
+            Destroy(collision);
+        }
+    }
+    
+
 
     private void FixedUpdate()
     {
@@ -87,7 +108,10 @@ public class Plane : MonoBehaviour
         lineRenderer.SetPosition(0, transform.position);
     }
 
-
+    private void OnBecameInvisible()
+    {
+        Destroy(gameObject);
+    }
 
     private void OnMouseDrag()
     {
