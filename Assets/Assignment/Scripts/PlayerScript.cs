@@ -8,6 +8,7 @@ public class PlayerScript : MonoBehaviour
 {
     Vector2 destination;
     Vector2 movement;
+    Vector2 startPosition;
     public float speed = 3;
     Rigidbody2D rb;
     bool clickingOnSelf = false;
@@ -23,6 +24,8 @@ public class PlayerScript : MonoBehaviour
     public GameObject bullet;
     public GameObject enemy;
 
+    public AnimationCurve moveCurve;
+
 
 
     // Start is called before the first frame update
@@ -30,6 +33,7 @@ public class PlayerScript : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        destination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
     // Update is called once per frame
@@ -41,8 +45,17 @@ public class PlayerScript : MonoBehaviour
         {
             // set new movement destination
             destination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            startPosition = rb.position;
+
             // use the destination vector to set the position of the gun
-            gun.transform.localPosition = destination.normalized;
+            
+
+        }
+        if (movement.normalized.magnitude >= 1)
+        {
+            gun.transform.localPosition = movement.normalized;
+
         }
         // set the velocity float for the animator
         animator.SetFloat("Velocity", movement.magnitude);
@@ -77,12 +90,19 @@ public class PlayerScript : MonoBehaviour
 
         // the amount to move by in total
         movement = destination - (Vector2)transform.position;
+        float total = (destination - startPosition).magnitude;
         if (movement.magnitude < 0.1)
         {
             movement = Vector2.zero;
         }
+
+        float interpolation = moveCurve.Evaluate(movement.magnitude / total);
+
+
+
         // moving in the direction of the target by the speed variable
-        rb.MovePosition(rb.position + movement.normalized * speed * Time.deltaTime);
+        //rb.MovePosition(rb.position + Vector2.Lerp(rb.position, destination, interpolation) * speed * Time.deltaTime);
+        rb.MovePosition((rb.position + movement.normalized * speed * interpolation * 2 * Time.deltaTime));
         
     }
 
