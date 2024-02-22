@@ -7,10 +7,13 @@ using UnityEngine;
 public class SoccerPlayer : MonoBehaviour
 {
     SpriteRenderer sr;
+    Rigidbody2D rb;
+    public float speed = 100;
     // Start is called before the first frame update
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -34,5 +37,10 @@ public class SoccerPlayer : MonoBehaviour
             sr.color = Color.red;
         }
         
+    }
+
+    public void Move(Vector2 direction)
+    {
+        rb.AddForce(direction * speed);
     }
 }
