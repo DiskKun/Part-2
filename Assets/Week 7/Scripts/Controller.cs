@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Controller : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class Controller : MonoBehaviour
     Vector2 direction;
 
     public static SoccerPlayer SelectedPlayer { get; private set; }
+    public static float score;
+    public TextMeshProUGUI scoreText;
 
     public static void SetSelectedPlayer(SoccerPlayer player)
     {
@@ -36,6 +39,7 @@ public class Controller : MonoBehaviour
 
     private void Update()
     {
+        scoreText.text = "Score: " + score;
         if (SelectedPlayer == null) return;
         if (Input.GetKeyDown(KeyCode.Space))
         {
